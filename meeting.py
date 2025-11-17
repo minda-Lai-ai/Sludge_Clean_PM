@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="專案主頁", layout="wide")
+st.title("XXXXXXXX作業專案")
+
 def render():
     st.header("會議管理")
     if st.button("新增會議"):
@@ -17,3 +20,4 @@ def render():
         st.success("已儲存")
     if col3.button("列印"):
         st.info("PDF存檔/列印會議記錄")
+
