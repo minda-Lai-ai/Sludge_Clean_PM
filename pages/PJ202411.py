@@ -5,7 +5,7 @@ from datetime import date
 #st.title("XXXXXXXX作業專案")
 
 # pages/PJ202411.py 範例
-st.title("XX專案1 - PJ202501 主頁")
+st.title("油槽清洗專案 - PJ202501 主頁")
 st.write("這是專案管理的詳細資訊頁面。")
 st.link_button("回到主選單", "/") # 可以用 / 回到 main.py
 
