@@ -1,17 +1,28 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="專案主頁", layout="wide")
-st.title("XXXXXXXX作業專案")
+# 注意：st.set_page_config() 和 st.title() 已移除，應在 pages/PJ202501.py 中處理
 
-def render():
-    st.header("每日施工紀要")
-    st.write("（萬年曆顯示功能，可用日曆套件或 python 內建方式）")
-    st.button("總攬")
+# --- 修正點：將函式名稱改為 render_work 且接受 project_no 參數 ---
+def render_work(project_no):
+    """
+    渲染每日施工紀要的次頁面內容。
+
+    Args:
+        project_no (str): 目前專案的工作案號。
+    """
+    st.header(f"每日施工紀要 (案號: {project_no})")
+    
+    # 萬年曆功能佔位符
+    st.info("（萬年曆顯示功能，可用日曆套件或 python 內建方式）")
+    
+    st.button("總覽", key=f"work_summary_{project_no}")
     st.write("請點選日曆進入填報/瀏覽當日施工細節")
+    
     # 施工紀要範例
     table = [
         {"日期":"2025-01-01", "作業等級":"A", "主要施工":"油槽清洗", "附加作業":"高處作業", "廠商人數":8, "監造人員":"王小明", "工作紀要":"順利完成", "油泥處理量":2.5, "油泥餅桶裝桶量":4, "木棧板數量":1, "其他":""},
         {"日期":"2025-01-02", "作業等級":"B", "主要施工":"油桶搬運", "附加作業":"吊掛作業", "廠商人數":7, "監造人員":"李小華", "工作紀要":"部分延期", "油泥處理量":2, "油泥餅桶裝桶量":3, "木棧板數量":1, "其他":"備註"}
     ]
-    st.dataframe(table)
+    
+    st.dataframe(table, use_container_width=True)
