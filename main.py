@@ -20,7 +20,7 @@ if menu == "執行中的專案":
         if st.button(f"{proj['name']} │ 案號：{proj_no}", key=f"pj_open_{proj_no}"):
             st.session_state["open_project_no"] = proj_n#o
 #            st.switch_page(f"PJ_{proj_no}.py")
-             st.switch_page("page_filename")
+             st.write("pages中現在有：", [f for f in os.listdir("pages") if f.endswith(".py")])
 
 elif menu == "新增專案":
     st.subheader("新增專案")
@@ -36,5 +36,6 @@ elif menu == "歷史專案":
     st.subheader("歷史專案")
     for proj in sorted(st.session_state["history_projects"], key=lambda x: x["start"], reverse=True):
         st.markdown(f"**{proj['name']}** │ 案號：{proj['no']} │ 開案日：{proj['start']}")
+
 
 
