@@ -29,8 +29,15 @@ if menu == "執行中的專案":
         py_filename = f"{proj_no}.py" if proj_no.startswith("PJ") or proj_no.startswith("LMD") else f"PJ_{proj_no}.py"
 
         # 檢查目前 pages/ 下是否有這個檔案
-        if py_filename not in page_py_files:
-            st.warning(f"找不到專案主頁：pages/{py_filename}（請確認 pages/ 有此檔案）")
+#        if py_filename not in page_py_files:
+#            st.warning(f"找不到專案主頁：pages/{py_filename}（請確認 pages/ 有此檔案）")
+        # 僅作備用測試，如果方案一仍然失敗，請嘗試此方案
+        
+        # 取得不含 .py 的頁面名稱
+        page_name = py_filename.replace(".py", "")
+        
+        if st.button(f"{proj['name']} │ 案號：{proj_no}", key=f"pj_open_{proj_no}"):
+            st.switch_page(page_name) # 例如： st.switch_page("PJ202501")
         else:
             if st.button(f"{proj['name']} │ 案號：{proj_no}", key=f"pj_open_{proj_no}"):
                 # --- 修正點：使用完整的相對路徑 ---
@@ -57,3 +64,4 @@ elif menu == "歷史專案":
     st.subheader("歷史專案")
     for proj in sorted(st.session_state["history_projects"], key=lambda x: x["start"], reverse=True):
         st.markdown(f"**{proj['name']}** │ 案號：{proj['no']} │ 開案日：{proj['start']}")
+
