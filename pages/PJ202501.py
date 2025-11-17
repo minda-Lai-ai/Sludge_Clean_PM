@@ -1,8 +1,13 @@
 import streamlit as st
 from datetime import date
 
-st.set_page_config(page_title="專案主頁", layout="wide")
-st.title("XXXXXXXX作業專案")
+#st.set_page_config(page_title="專案主頁", layout="wide")
+#st.title("XXXXXXXX作業專案")
+
+# pages/PJ202501.py 範例
+st.title("XX專案1 - PJ202501 主頁")
+st.write("這是專案管理的詳細資訊頁面。")
+st.link_button("回到主選單", "/") # 可以用 / 回到 main.py
 
 # 假設單一專案資訊
 basic_info = {
