@@ -2,6 +2,14 @@ import streamlit as st
 import pandas as pd
 import os
 
+#minda
+def insurance_input():
+    with st.form("保險資料表單"):
+        # 特定表單內容...
+        submit = st.form_submit_button("送出")
+        return submit  # 或 return new_row
+#minda
+
 st.set_page_config(page_title="專案主頁", layout="wide")
 st.title("工程專案保險管理")
 
