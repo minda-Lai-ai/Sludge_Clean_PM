@@ -1,6 +1,9 @@
 import streamlit as st
 from datetime import date
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
+
 
 st.set_page_config(page_title="Minda的專案管理系統", layout="wide")
 st.title("Minda的專案管理系統")
@@ -57,5 +60,6 @@ elif menu == "歷史專案":
     st.subheader("歷史專案")
     for proj in sorted(st.session_state["history_projects"], key=lambda x: x["start"], reverse=True):
         st.markdown(f"**{proj['name']}** │ 案號：{proj['no']} │ 開案日：{proj['start']}")
+
 
 
