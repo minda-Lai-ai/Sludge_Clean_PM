@@ -34,7 +34,7 @@ st.write(f"專案狀況: {project_status}")
 st.divider()
 subpage = st.radio("次頁面", ["保險", "會議", "公證量油", "施工紀要", "成員矩陣"])
 if subpage == "保險":
-    import pages/insurance; insurance.render()
+    import insurance; insurance.render()
 elif subpage == "會議":
     import meeting; meeting.render()
 elif subpage == "公證量油":
