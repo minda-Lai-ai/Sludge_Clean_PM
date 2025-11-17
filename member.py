@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="專案主頁", layout="wide")
+st.title("XXXXXXXX作業專案")
+
 def render():
     st.header("成員矩陣")
     df = pd.DataFrame([
@@ -13,3 +16,4 @@ def render():
         st.info("進入可編輯模式（建議使用st.form）")
     if col2.button("儲存"):
         st.success("已儲存")
+
