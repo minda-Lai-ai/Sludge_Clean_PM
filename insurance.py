@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="專案主頁", layout="wide")
+st.title("XXXXXXXX作業專案")
+
 def render():
     st.header("保險列表")
     try:
@@ -18,3 +21,4 @@ def render():
         st.success("已儲存")
     if col4.button("列印"):
         st.info("PDF存檔或列印（需外部方案）")
+
