@@ -7,6 +7,8 @@ from modules.sludge import render_sludge
 from modules.work import render_work
 from modules.member import render_member
 
+# 下面主頁資訊與原本相同
+
 st.set_page_config(page_title="XX專案1 - PJ202501 主頁", layout="wide")
 st.title("XX專案1 - PJ202501 主頁")
 st.link_button("回到主選單", "/")
