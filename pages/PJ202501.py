@@ -1,11 +1,13 @@
 import streamlit as st
 from datetime import date
 
+# --- 修正點：模組已移至 modules/ 子目錄，恢復匯入路徑 ---
 from modules.insurance import render_insurance
 from modules.meeting import render_meeting
 from modules.sludge import render_sludge
 from modules.work import render_work
 from modules.member import render_member
+# --------------------------------------------------------------------
 
 # 下面主頁資訊與原本相同
 
@@ -13,6 +15,7 @@ st.set_page_config(page_title="XX專案1 - PJ202501 主頁", layout="wide")
 st.title("XX專案1 - PJ202501 主頁")
 st.link_button("回到主選單", "/")
 
+# 基本資訊
 basic_info = {
     "工作案號": "PJ202501",
     "預算編號": "B12345",
@@ -30,23 +33,30 @@ basic_info = {
 for k, v in basic_info.items():
     st.write(f"{k}: {v}")
 
+# 專案狀態計算
 today = date.today()
 start = date(2025,1,1)
 end = date(2025,1,31)
 if start <= today <= end: project_status = "進行中"
 elif today < start: project_status = "準備中"
-elif today > end: project_status = "延遲"
+elif today > end: project_status = "已完成 (延遲)" # 修正：專案結束應該是已完成，但可以備註延遲
+else: project_status = "已完成" # 預防性加入 else
+
 st.write(f"專案狀況: {project_status}")
 
 st.divider()
+
+# 次頁面導航
 subpage = st.radio("次頁面", ["保險", "會議", "公證量油", "施工紀要", "成員矩陣"])
+project_no = basic_info["工作案號"]
+
 if subpage == "保險":
-    render_insurance(basic_info["工作案號"])
+    render_insurance(project_no)
 elif subpage == "會議":
-    render_meeting(basic_info["工作案號"])
+    render_meeting(project_no)
 elif subpage == "公證量油":
-    render_sludge(basic_info["工作案號"])
+    render_sludge(project_no)
 elif subpage == "施工紀要":
-    render_work(basic_info["工作案號"])
+    render_work(project_no)
 elif subpage == "成員矩陣":
-    render_member(basic_info["工作案號"])
+    render_member(project_no)
