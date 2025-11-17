@@ -21,6 +21,12 @@ if menu == "執行中的專案":
            st.session_state["open_project_no"] = proj_no
 #            st.switch_page(f"PJ_{proj_no}.py")
            st.write("pages中現在有：", [f for f in os.listdir("pages") if f.endswith(".py")])
+# minda
+        pages = ["PJ202501.py", "PJ202502.py", "LMD113249.py"]    
+        selected_page = st.selectbox("選擇專案", pages)
+        if st.button("進入專案"):
+            st.switch_page(selected_page)
+# minda
 
 elif menu == "新增專案":
     st.subheader("新增專案")
@@ -36,6 +42,7 @@ elif menu == "歷史專案":
     st.subheader("歷史專案")
     for proj in sorted(st.session_state["history_projects"], key=lambda x: x["start"], reverse=True):
         st.markdown(f"**{proj['name']}** │ 案號：{proj['no']} │ 開案日：{proj['start']}")
+
 
 
 
