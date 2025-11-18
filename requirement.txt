@@ -5,3 +5,4 @@ os
 date
 sys
 openpyxl
+xlsxwriter
