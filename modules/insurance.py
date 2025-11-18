@@ -73,6 +73,7 @@ def render_insurance(project_no):
     df.to_csv(csv_buffer, index=False)
     st.download_button("下載CSV", data=csv_buffer.getvalue(), file_name=f"Bao-Xian_{project_no}.csv", mime="text/csv")
     # 下載 Excel（如需，動態產生無需本地儲存）
-    excel_buffer = io.BytesIO()
-    df.to_excel(excel_buffer, index=False, engine="xlsxwriter")
-    st.download_button("下載Excel", data=excel_buffer.getvalue(), file_name=f"Bao-Xian_{project_no}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    #excel_buffer = io.BytesIO()
+    #df.to_excel(excel_buffer, index=False, engine="xlsxwriter")
+    #st.download_button("下載Excel", data=excel_buffer.getvalue(), file_name=f"Bao-Xian_{project_no}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    
