@@ -62,15 +62,15 @@ def render_insurance(project_no):
                 row = df.iloc[idx]
                 c0, c1 = st.columns(2)
                 with c0:
-                    edit_class = st.selectbox("保險分類", ["工程", "人員"], index=0 if row["保險分類"] == "工程" else 1)
-                    edit_item = st.text_input("保險項目", value=row["保險項目"])
-                    edit_company = st.text_input("保險公司", value=row["保險公司"])
-                    edit_amt = st.text_input("額度", value=row["保險額度"])
-                    edit_start = st.date_input("開始日", value=pd.to_datetime(row["保險開始日"]))
+                    edit_class = st.selectbox("保險分類", ["工程", "人員"], index=0 if row["保險分類"] == "工程" else 1, key=f"class_{idx}") 
+                    edit_item = st.text_input("保險項目", value=row["保險項目"], key=f"item_{idx}")
+                    edit_company = st.text_input("保險公司", value=row["保險公司"], key=f"company_{idx}")
+                    edit_amt = st.text_input("額度", value=row["保險額度"], key=f"amt_{idx}")
+                    edit_start = st.text_input("開始日", value=row["保險開始日"], key=f"start_{idx}")
                 with c1:
-                    edit_end = st.date_input("到期日", value=pd.to_datetime(row["保險到期日"]))
-                    edit_person = st.text_input("被保人", value=row["被保人"])
-                    edit_note = st.text_area("備註", value=row["備註"])
+                    edit_end = st.text_input("到期日", value=row["保險到期日"], key=f"end_{idx}")
+                    edit_person = st.text_input("被保人", value=row["被保人"], key=f"person_{idx}")
+                    edit_note = st.text_area("備註", value=row["備註"], key=f"note_{idx}")                    
                 if st.button("新增儲存"):
                     # 存檔邏輯
                     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
