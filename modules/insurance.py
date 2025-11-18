@@ -39,7 +39,7 @@ def render_insurance(project_no):
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                 df.to_csv(csv_path, index=False)
                 st.success("已儲存")
-                st.experimental_rerun()
+                
 
     with tab2:
         item = st.selectbox("保險項目", preset_people, key="people_select")
@@ -65,8 +65,7 @@ def render_insurance(project_no):
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                 df.to_csv(csv_path, index=False)
                 st.success("已儲存")
-                st.experimental_rerun()
-
+ 
     st.dataframe(df, use_container_width=True)
     # 下載 CSV
     csv_buffer = io.StringIO()
