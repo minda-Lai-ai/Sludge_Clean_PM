@@ -44,8 +44,8 @@ def render_insurance(project_no):
             }
             df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
             df.to_csv(csv_path, index=False)
-            st.success("已新增！")
-            st.experimental_rerun()  # 強制刷新資料表單內容
+            st.success("已新增！請下方確認資料表")
+
 
     # 資料編輯列
     st.subheader("保險資料清單（點選欲「修改/刪除」資料列）")
@@ -71,18 +71,14 @@ def render_insurance(project_no):
                     edit_end = st.date_input("到期日", value=pd.to_datetime(row["保險到期日"]))
                     edit_person = st.text_input("被保人", value=row["被保人"])
                     edit_note = st.text_area("備註", value=row["備註"])
-                if st.button("儲存修改", key="save_edit"):
-                    df.at[idx, "保險分類"] = edit_class
-                    df.at[idx, "保險項目"] = edit_item
-                    df.at[idx, "保險公司"] = edit_company
-                    df.at[idx, "保險額度"] = edit_amt
-                    df.at[idx, "保險開始日"] = str(edit_start)
-                    df.at[idx, "保險到期日"] = str(edit_end)
-                    df.at[idx, "被保人"] = edit_person
-                    df.at[idx, "備註"] = edit_note
+                if st.button("新增儲存"):
+                    # 存檔邏輯
+                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                     df.to_csv(csv_path, index=False)
-                    st.success("已修改")
-                    st.experimental_rerun()
+                    st.success("已新增！")
+                    # 主動重讀 csv 以顯示新資料
+                    df = pd.read_csv(csv_path)
+                
 
         # 刪除功能
         if key_del.isdigit():
