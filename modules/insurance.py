@@ -70,25 +70,29 @@ def render_insurance(project_no):
                 with c1:
                     edit_end = st.text_input("到期日", value=row["保險到期日"], key=f"end_{idx}")
                     edit_person = st.text_input("被保人", value=row["被保人"], key=f"person_{idx}")
-                    edit_note = st.text_area("備註", value=row["備註"], key=f"note_{idx}")                    
-                if st.button("新增儲存"):
-                    # 存檔邏輯
-                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                    edit_note = st.text_area("備註", value=row["備註"], key=f"note_{idx}")     
+                # 【改這裡】儲存修改按鈕 key 唯一
+                if st.button("儲存修改", key=f"edit_save_{idx}"):
+                    df.at[idx, "保險分類"] = edit_class
+                    df.at[idx, "保險項目"] = edit_item
+                    df.at[idx, "保險公司"] = edit_company
+                    df.at[idx, "保險額度"] = edit_amt
+                    df.at[idx, "保險開始日"] = edit_start
+                    df.at[idx, "保險到期日"] = edit_end
+                    df.at[idx, "被保人"] = edit_person
+                    df.at[idx, "備註"] = edit_note
                     df.to_csv(csv_path, index=False)
-                    st.success("已新增！")
-                    # 主動重讀 csv 以顯示新資料
+                    st.success("已修改！")
                     df = pd.read_csv(csv_path)
-                
+               
 
         # 刪除功能
-        if key_del.isdigit():
-            idx = int(key_del)
-            if 0 <= idx < len(df):
-                if st.button(f"確認刪除第{idx}列", key="del_btn"):
-                    df = df.drop(idx).reset_index(drop=True)
-                    df.to_csv(csv_path, index=False)
-                    st.warning(f"第{idx}列已刪除")
-                    st.experimental_rerun()
+        if st.button(f"確認刪除第{idx}列", key=f"del_btn_{idx}"):
+            df = df.drop(idx).reset_index(drop=True)
+            df.to_csv(csv_path, index=False)
+            st.warning(f"第{idx}列已刪除")
+            # df = pd.read_csv(csv_path)
+
 
     else:
         st.info("目前沒有任何資料")
