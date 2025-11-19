@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
+from datetime import date  # ← 新增這行！
+
+# 接下來 st.date_input("...", value=date.today()) 就不會有錯了
 
 # -- 放在檔案最前面，所有函數都能用 --
 COLUMNS = [
