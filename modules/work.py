@@ -20,6 +20,7 @@ if "work_log" not in st.session_state:
     ]
     st.session_state.work_log = pd.DataFrame(sample, columns=COLUMNS).sort_values("日期")
 
+
 def summary_table(df):
     if df.empty: return df
     new_df = df.copy().sort_values("日期").reset_index(drop=True)
