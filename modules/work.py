@@ -1,31 +1,53 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime, date, timedelta
 import io
 
-# 欄位名稱統一
-COLUMNS = [
-    "日期", "作業等級", "主要施工項目", "附加作業", "廠商作業人數", "監造人員",
-    "工作紀要", "油泥處理量", "油泥餅桶量", "油泥直接裝桶量", "其他工作紀要"
-]
-
-# 工具函式：依欄名過濾及插入累計欄
 def summary_table(df):
-    if df.empty:
-        return df
-    new_df = df.copy()
+    if df.empty: return df
+    new_df = df.copy().sort_values("日期").reset_index(drop=True)
+    # 累積量
     for col, acc_col in [
         ("油泥處理量", "油泥處理累積量"),
         ("油泥餅桶量", "油泥餅桶累積量"),
-        ("油泥直接裝桶量", "油泥直接裝桶累積量"),
+        ("油泥直接裝桶量", "油泥直接裝桶累積量")
     ]:
         new_df[acc_col] = new_df[col].cumsum()
-    # 棧板使用量 = ceil((油泥餅桶累積量 + 油泥直接裝桶累積量) / 4)
     new_df["棧板使用量"] = ((new_df["油泥餅桶累積量"] + new_df["油泥直接裝桶累積量"]) / 4).apply(np.ceil).astype(int)
-    # 工作紀要長度25個中文字限制
+    # 工作日欄位
+    new_df["工作日"] = new_df.index + 1
+    # 工作紀要長度限制
     new_df["工作紀要"] = new_df["工作紀要"].apply(lambda x: str(x)[:25] + ("..." if len(str(x)) > 25 else ""))
     return new_df
+
+def render_work(project_no):
+    st.header(f"每日施工紀要 (案號: {project_no})")
+    df = st.session_state.work_log
+    summary_df = summary_table(df)
+
+    st.subheader("每日紀要總攬")
+
+    # 資料列加上「刪除、確認刪除」邏輯
+    if "pending_delete" not in st.session_state:
+        st.session_state.pending_delete = None  # 保存「待刪除」日期
+
+    for i, row in summary_df.iterrows():
+        cols = st.columns(len(summary_df.columns) + 1)
+        for j, col in enumerate(summary_df.columns):
+            cols[j].write(row[col])
+        # 刪除/確認按鈕
+        if st.session_state.pending_delete == row["日期"]:
+            if cols[-1].button("確定刪除", key=f"confirm_{row['日期']}"):
+                st.session_state.work_log = df[df["日期"] != row["日期"]]
+                st.session_state.pending_delete = None
+                st.experimental_rerun()
+            if cols[-1].button("取消", key=f"cancel_{row['日期']}"):
+                st.session_state.pending_delete = None
+        else:
+            if cols[-1].button("刪除", key=f"del_{row['日期']}"):
+                st.session_state.pending_delete = row["日期"]
+
+    st.dataframe(summary_df, use_container_width=True)
 
 # 預設初始化資料
 if "work_log" not in st.session_state:
@@ -98,16 +120,12 @@ def render_work(project_no):
     st.dataframe(summary_df, use_container_width=True)
 
     # =================== 下載區 ===================
-    st.divider()
+    # ===== Excel、CSV 下載修正 =====
     st.subheader("資料下載")
-    file_col1, file_col2 = st.columns(2)
-    with file_col1:
-        csv = st.session_state.work_log.to_csv(index=False, encoding="utf-8-sig")
-        st.download_button("下載 CSV", data=csv, file_name=f"{project_no}_worklog.csv", mime="text/csv")
-    with file_col2:
-        out = io.BytesIO()
-        st.session_state.work_log.to_excel(out, index=False, encoding="utf-8-sig")
-        st.download_button("下載 Excel", data=out.getvalue(), file_name=f"{project_no}_worklog.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
+    csv = st.session_state.work_log.to_csv(index=False, encoding="utf-8-sig")
+    st.download_button("下載 CSV", data=csv, file_name=f"{project_no}_worklog.csv", mime="text/csv")
+    out = io.BytesIO()
+    st.session_state.work_log.to_excel(out, index=False)  # << encoding 拿掉
+    st.download_button("下載 Excel", data=out.getvalue(), file_name=f"{project_no}_worklog.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 # 呼叫範例
 # render_work("PJ202501")
