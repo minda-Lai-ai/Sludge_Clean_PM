@@ -3,17 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
-selected = st.date_input("請選擇欲填報/修改的日期 (萬年曆)", value=date.today())
-if isinstance(selected, list):  # 多選或異常時只取第一個
-    if len(selected) > 0:
-        selected_date = selected[0]
-    else:
-        st.stop()  # 無選擇值，直接中止
-else:
-    selected_date = selected
-
-day_str = selected_date.strftime("%Y-%m-%d")
-
 COLUMNS = [
     "日期", "作業等級", "主要施工項目", "附加作業",
     "廠商作業人數", "監造人員", "工作紀要",
