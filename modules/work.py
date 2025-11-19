@@ -11,24 +11,23 @@ COLUMNS = [
 
 if "work_log" not in st.session_state:
     sample = [
-        {
-            "日期": "2025-01-01", "作業等級": "A", "主要施工項目": "油槽清洗", "附加作業": "高處作業",
-            "廠商作業人數": 8, "監造人員": "王小明", "工作紀要": "順利完成",
-            "油泥處理量": 2.5, "油泥餅桶量": 4, "油泥直接裝桶量": 1, "其他工作紀要": ""
-        },
-        {
-            "日期": "2025-01-02", "作業等級": "B", "主要施工項目": "油桶搬運", "附加作業": "吊掛作業",
-            "廠商作業人數": 7, "監造人員": "李小華", "工作紀要": "部分延期",
-            "油泥處理量": 2, "油泥餅桶量": 3, "油泥直接裝桶量": 2, "其他工作紀要": "備註"
-        }
+        {"日期": "2025-01-01", "作業等級": "A", "主要施工項目": "油槽清洗", "附加作業": "高處作業",
+         "廠商作業人數": 8, "監造人員": "王小明", "工作紀要": "順利完成",
+         "油泥處理量": 2.5, "油泥餅桶量": 4, "油泥直接裝桶量": 1, "其他工作紀要": ""},
+        {"日期": "2025-01-02", "作業等級": "B", "主要施工項目": "油桶搬運", "附加作業": "吊掛作業",
+         "廠商作業人數": 7, "監造人員": "李小華", "工作紀要": "部分延期",
+         "油泥處理量": 2, "油泥餅桶量": 3, "油泥直接裝桶量": 2, "其他工作紀要": "備註"}
     ]
     st.session_state.work_log = pd.DataFrame(sample, columns=COLUMNS).sort_values("日期")
-if "pending_delete" not in st.session_state:
-    st.session_state.pending_delete = None
 
 def summary_table(df):
     if df.empty: return df
     new_df = df.copy().sort_values("日期").reset_index(drop=True)
+    # 過濾全為空的紀錄（不計入表格與工作日）
+    mask_not_empty = new_df.drop(columns=["日期"]).apply(
+        lambda x: any([str(xx).strip() != "" and xx != 0 and xx != 0.0 for xx in x.values]), axis=1
+    )
+    new_df = new_df[mask_not_empty].reset_index(drop=True)
     for col, acc_col in [
         ("油泥處理量", "油泥處理累積量"),
         ("油泥餅桶量", "油泥餅桶累積量"),
@@ -42,6 +41,8 @@ def summary_table(df):
 
 def render_work(project_no):
     st.header(f"每日施工紀要 (案號: {project_no})")
+
+    # =================== 萬年曆選日期、填報/編輯 ===================
     col1, col2 = st.columns([2,1])
     with col1:
         selected = st.date_input("請選擇欲填報/修改的日期 (萬年曆)", value=date.today())
@@ -72,34 +73,17 @@ def render_work(project_no):
             st.success("儲存成功！")
             st.experimental_rerun()
 
+    # =================== 僅純表格總攬 ===================
     st.divider()
     st.subheader("每日紀要總攬")
     summary_df = summary_table(st.session_state.work_log)
-    for row_idx, row in summary_df.iterrows():
-        cols = st.columns(len(summary_df.columns) + 1)
-        for col_idx, col in enumerate(summary_df.columns):
-            cols[col_idx].write(row[col])
-        if st.session_state.pending_delete == row["日期"]:
-            if cols[-1].button("確定刪除", key=f"confirm_{row['日期']}"):
-                st.session_state.work_log = st.session_state.work_log[st.session_state.work_log["日期"] != row["日期"]]
-                st.session_state.pending_delete = None
-                st.experimental_rerun()
-            if cols[-1].button("取消", key=f"cancel_{row['日期']}"):
-                st.session_state.pending_delete = None
-        else:
-            if cols[-1].button("刪除", key=f"del_{row['日期']}"):
-                st.session_state.pending_delete = row["日期"]
+    # 純表格顯示（不加刪除）
     st.dataframe(summary_df, use_container_width=True)
 
-    # ===== 只要 csv 下載，支援中文 =====
+    # =================== CSV 下載 ===================
     st.divider()
     st.subheader("資料下載")
     csv = st.session_state.work_log.to_csv(index=False, encoding="utf-8-sig")
-    st.download_button(
-        "下載 CSV (可正常顯示中文)",
-        data=csv,
-        file_name=f"{project_no}_worklog.csv",
-        mime="text/csv"
-    )
+    st.download_button("下載 CSV (可正常顯示中文)", data=csv, file_name=f"{project_no}_worklog.csv", mime="text/csv")
 
 render_work("PJ202501")
