@@ -131,11 +131,20 @@ def render_work(project_no):
 
     # =================== 下載區 ===================
     # ===== Excel、CSV 下載修正 =====
-    st.subheader("資料下載")
-    csv = st.session_state.work_log.to_csv(index=False, encoding="utf-8-sig")
-    st.download_button("下載 CSV", data=csv, file_name=f"{project_no}_worklog.csv", mime="text/csv")
-    out = io.BytesIO()
-    st.session_state.work_log.to_excel(out, index=False)  # << encoding 拿掉
-    st.download_button("下載 Excel", data=out.getvalue(), file_name=f"{project_no}_worklog.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+# 顯示每日紀要總攬
+st.subheader("每日紀要總攬")
+summary_df = summary_table(st.session_state.work_log)
+
+for row_idx, row in summary_df.iterrows():
+    cols = st.columns(len(summary_df.columns) + 1)
+    for col_idx, col in enumerate(summary_df.columns):
+        cols[col_idx].write(row[col])
+    # 最右一欄增「刪除」邏輯
+    if cols[-1].button("刪除", key=f"delete_{row['日期']}"):
+        st.session_state.work_log = st.session_state.work_log[st.session_state.work_log["日期"] != row["日期"]]
+        st.experimental_rerun()
+
+st.dataframe(summary_df, use_container_width=True)
+
 # 呼叫範例
 # render_work("PJ202501")
