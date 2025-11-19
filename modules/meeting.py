@@ -57,11 +57,14 @@ def render_meeting(project_no):
             st.success("已刪除")
             st.experimental_rerun()
 
-    # 下載功能(Excel)
-    output = io.BytesIO()
-    df.to_excel(output, index=False)
-    output.seek(0)
-    st.download_button("下載 Excel", data=output, file_name=excel_path, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+# 匯出為 csv 並加上 BOM
+csv = df.to_csv(index=False, encoding='utf-8-sig')
+st.download_button(
+    label="下載 CSV（中文支援）",
+    data=csv,
+    file_name="Meeting_{project_no}.csv",  # 用你的變數
+    mime='text/csv'
+)
 
 # 用法:
 # render_meeting("PJ202501")
