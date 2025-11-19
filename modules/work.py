@@ -3,6 +3,17 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
+selected = st.date_input("請選擇欲填報/修改的日期 (萬年曆)", value=date.today())
+if isinstance(selected, list):  # 多選或異常時只取第一個
+    if len(selected) > 0:
+        selected_date = selected[0]
+    else:
+        st.stop()  # 無選擇值，直接中止
+else:
+    selected_date = selected
+
+day_str = selected_date.strftime("%Y-%m-%d")
+
 COLUMNS = [
     "日期", "作業等級", "主要施工項目", "附加作業",
     "廠商作業人數", "監造人員", "工作紀要",
@@ -41,15 +52,20 @@ def summary_table(df):
 
 def render_work(project_no):
     st.header(f"每日施工紀要 (案號: {project_no})")
-
-    # =================== 萬年曆選日期、填報/編輯 ===================
     col1, col2 = st.columns([2,1])
     with col1:
         selected = st.date_input("請選擇欲填報/修改的日期 (萬年曆)", value=date.today())
-    day_str = selected.strftime("%Y-%m-%d")
-    df = st.session_state.work_log
-    sel_row = df[df["日期"] == day_str]
-    edit_mode = not sel_row.empty
+    # 修正型態
+    if isinstance(selected, list):
+        if len(selected) > 0:
+            selected_date = selected[0]
+        else:
+            st.warning("請選擇日期！")
+            st.stop()
+    else:
+        selected_date = selected
+    day_str = selected_date.strftime("%Y-%m-%d")
+    # ...以下照原程式處理即可...
 
     with st.form("edit_form", clear_on_submit=False):
         st.subheader("填報/編輯紀要內容")
