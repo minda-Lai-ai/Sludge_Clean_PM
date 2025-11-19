@@ -20,7 +20,13 @@ if "work_log" not in st.session_state:
     st.session_state.work_log = pd.DataFrame(sample, columns=COLUMNS).sort_values("日期")
 
 def render_work(project_no):
-    df = st.session_state.work_log
+    # ...前面略...
+    with st.form("edit_form", clear_on_submit=False):    # <--- 不要漏掉 with
+        # 所有表單欄位
+        submitted = st.form_submit_button("儲存")
+        if submitted:
+            # 儲存邏輯
+            pass
 
     col1, col2 = st.columns([2,1])
     with col1:
