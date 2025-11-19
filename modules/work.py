@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-from datetime import date
 
 COLUMNS = [
     "日期", "作業等級", "主要施工項目", "附加作業",
@@ -9,6 +7,7 @@ COLUMNS = [
     "油泥處理量", "油泥餅桶量", "油泥直接裝桶量", "其他工作紀要"
 ]
 
+# 保證初始化且只執行一次
 if "work_log" not in st.session_state:
     sample = [
         {"日期": "2025-01-01", "作業等級": "A", "主要施工項目": "油槽清洗", "附加作業": "高處作業",
@@ -20,27 +19,8 @@ if "work_log" not in st.session_state:
     ]
     st.session_state.work_log = pd.DataFrame(sample, columns=COLUMNS).sort_values("日期")
 
-
-def summary_table(df):
-    if df.empty: return df
-    new_df = df.copy().sort_values("日期").reset_index(drop=True)
-    mask_not_empty = new_df.drop(columns=["日期"]).apply(
-        lambda x: any([str(xx).strip() != "" and xx != 0 and xx != 0.0 for xx in x.values]), axis=1
-    )
-    new_df = new_df[mask_not_empty].reset_index(drop=True)
-    for col, acc_col in [
-        ("油泥處理量", "油泥處理累積量"),
-        ("油泥餅桶量", "油泥餅桶累積量"),
-        ("油泥直接裝桶量", "油泥直接裝桶累積量")
-    ]:
-        new_df[acc_col] = new_df[col].cumsum()
-    new_df["棧板使用量"] = ((new_df["油泥餅桶累積量"] + new_df["油泥直接裝桶累積量"]) / 4).apply(np.ceil).astype(int)
-    new_df["工作日"] = new_df.index + 1
-    new_df["工作紀要"] = new_df["工作紀要"].apply(lambda x: str(x)[:25] + ("..." if len(str(x)) > 25 else ""))
-    return new_df
-
 def render_work(project_no):
-    st.header(f"每日施工紀要 (案號: {project_no})")
+    df = st.session_state.work_log
 
     col1, col2 = st.columns([2,1])
     with col1:
