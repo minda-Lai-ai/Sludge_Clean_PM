@@ -73,6 +73,7 @@ def render_member(project_no):
                 st.session_state[f"member_df_{project_no}"] = df
                 st.success("已刪除該成員")
 
+        with col3:
         # 匯出
         csv = df.to_csv(index=False, encoding="utf-8-sig")
         st.download_button(
