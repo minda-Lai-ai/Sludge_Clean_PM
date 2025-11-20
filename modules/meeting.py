@@ -57,7 +57,7 @@ def render_meeting(project_no):
             df = df.drop(idx).reset_index(drop=True)
             df.to_csv(csv_path, index=False, encoding="utf-8-sig")
             st.success("已刪除")
-            st.experimental_rerun()
+    #        st.experimental_rerun()
 
         # 匯出為 csv 並加上 BOM
         csv = df.to_csv(index=False, encoding='utf-8-sig')
