@@ -48,6 +48,10 @@ def render_meeting(project_no):
                     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
                     st.success("已修改")
                     st.experimental_rerun()
+
+        if __name__ == "__main__":
+            render_meeting(project_no)
+        
         # 刪除功能
         if st.button("刪除此列"):
             df = df.drop(idx).reset_index(drop=True)
