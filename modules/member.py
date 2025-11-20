@@ -5,28 +5,29 @@ def render_member(project_no):
     csv_path = f"Member_{project_no}.csv"
     columns = ["單位", "姓名", "職務類別", "相關證照", "登錄協議組織紀錄", "聯絡方式", "代理人", "其他"]
 
-    # 初始化 session_state
-    if f"member_df_{project_no}" not in st.session_state:
+    # session_state 初始化
+    state_key = f"member_df_{project_no}"
+    if state_key not in st.session_state:
         try:
             df = pd.read_csv(csv_path, encoding="utf-8-sig")
         except Exception:
             df = pd.DataFrame(columns=columns)
-        st.session_state[f"member_df_{project_no}"] = df
-    else:
-        df = st.session_state[f"member_df_{project_no}"]
+        st.session_state[state_key] = df
+    df = st.session_state[state_key]
+
+    # 「操作狀態」刷新 flag
+    if "member_action_flag" not in st.session_state:
+        st.session_state.member_action_flag = 0
 
     st.header(f"成員矩陣 (案號: {project_no})")
     st.markdown("### 專案參與人員清單")
 
-    # 顯示序號欄
-    if len(df) > 0:
-        display_df = df.copy()
-        display_df.insert(0, "序號", range(len(df)))
-        st.dataframe(display_df, use_container_width=True, hide_index=True)
-    else:
-        st.info("目前尚無任何人員資料。")
+    # 顯示序號
+    display_df = df.copy()
+    display_df.insert(0, "序號", range(len(display_df)))
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
 
-    # 新增成員
+    # 新增
     with st.expander("➕ 新增成員"):
         with st.form("add_member_form"):
             unit = st.text_input("單位")
@@ -42,7 +43,8 @@ def render_member(project_no):
                 new_row = pd.DataFrame([[unit, name, duty, cert, reg, phone, proxy, note]], columns=columns)
                 df = pd.concat([df, new_row], ignore_index=True)
                 df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-                st.session_state[f"member_df_{project_no}"] = df
+                st.session_state[state_key] = df
+                st.session_state.member_action_flag += 1
                 st.success("新增成功！")
 
     # 編輯/刪除
@@ -50,7 +52,7 @@ def render_member(project_no):
         idx = st.number_input("請選擇人員序號進行編輯或刪除", min_value=0, max_value=len(df)-1, step=1)
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("編輯選取成員", key=f"edit_member_{project_no}"):
+            if st.button("編輯選取成員", key=f"edit_{st.session_state.member_action_flag}"):
                 with st.form("edit_member_form"):
                     unit = st.text_input("單位", value=df.loc[idx, "單位"])
                     name = st.text_input("姓名", value=df.loc[idx, "姓名"])
@@ -64,13 +66,15 @@ def render_member(project_no):
                     if ok:
                         df.loc[idx] = [unit, name, duty, cert, reg, phone, proxy, note]
                         df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-                        st.session_state[f"member_df_{project_no}"] = df
+                        st.session_state[state_key] = df
+                        st.session_state.member_action_flag += 1
                         st.success("已完成編輯")
         with col2:
-            if st.button("刪除選取成員", key=f"del_member_{project_no}"):
+            if st.button("刪除選取成員", key=f"del_{st.session_state.member_action_flag}"):
                 df = df.drop(idx).reset_index(drop=True)
                 df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-                st.session_state[f"member_df_{project_no}"] = df
+                st.session_state[state_key] = df
+                st.session_state.member_action_flag += 1
                 st.success("已刪除該成員")
 
         # 匯出
@@ -82,6 +86,5 @@ def render_member(project_no):
             mime='text/csv'
         )
 
-# 用法範例
+# 用法
 # render_member("PJ202501")
-
