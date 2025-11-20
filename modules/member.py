@@ -39,7 +39,7 @@ def render_member(project_no):
                 df = pd.concat([df, new_row], ignore_index=True)
                 df.to_csv(csv_path, index=False, encoding="utf-8-sig")
                 st.success("新增成功！")
-                st.experimental_rerun()
+     #           st.experimental_rerun()
 
     # 列表區(選取要編輯/刪除的列)
     if len(df) > 0:
