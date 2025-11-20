@@ -27,7 +27,7 @@ def render_meeting(project_no):
             df_new = pd.DataFrame([[d, loc, sub, host, att, note]], columns=columns)
             df = pd.concat([df, df_new], ignore_index=True)
             df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-            st.experimental_rerun()
+    #        st.experimental_rerun()
 
     # 顯示表格
     st.dataframe(df, use_container_width=True)
